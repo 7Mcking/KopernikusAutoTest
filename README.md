@@ -27,21 +27,21 @@
 ##### Question 3:What values did you decide to use for input parameters and how did you find these values?
 
 * Oh! Its a really good question and thank god it was listed in the assignment itself :). So there were 4 parameters I figure out:
-  * These are Image dimensions to be used to compare, Gaussian Blur, score, min_area_contour,
-  * Except one anamoly of (6,10) image size the smallest is dimension is 480. I took half of it as the image size to compare. Can be even smaller to make it faster! 
-  * For Gaussian blur I took the radius to be 3. 
-  * For score threshold I have made a function which compares two images given the process mentioned in the pdf doc. Since I was not supposed to come up with the algo I didn't delved into it oo much. But there are resouces online which recommend to use hash functions. However, I haven't checked if they are faster.
-  * The score was zero for same images or almost similar images. It increased as the images had varied illumination or an object present which wasn't there in the scene before.
-  * Coming to the last part selecting min_contour_area. I have created a function called compareDifferentContourAreaValues.
-  * It requires 2 images and a list of  of values one would like to try. This has to be even in size because it uses a function called stackImages which I found online (https://www.computervision.zone/topic/chapter-8-contour-shape-detection/) which requires it to be even. It gives the score from the compare_frame_change_detection provided and shows in a single image.
-  * The values I tried are 1, 100, 500, 1000, 5000, 10000. Beyond 1000 scores became unreliable and the score values for 1,100, 1000 were almost similar with a deviation of around 200 for min_contour_area = 1 with the rest.
+* These are Image dimensions to be used to compare, Gaussian Blur, score, min_area_contour,
+* Except one anamoly of (6,10) image size the smallest is dimension is 480. I took half of it as the image size to compare. Can be even smaller to make it faster! 
+* For Gaussian blur I took the radius to be 3. 
+* For score threshold I have made a function which compares two images given the process mentioned in the pdf doc. Since I was not supposed to come up with the algo I didn't delved into it oo much. But there are resouces online which recommend to use hash functions. However, I haven't checked if they are faster.
+ * The score was zero for same images or almost similar images. It increased as the images had varied illumination or an object present which wasn't there in the scene before.
+* Coming to the last part selecting min_contour_area. I have created a function called compareDifferentContourAreaValues.
+ * It requires 2 images and a list of  of values one would like to try. This has to be even in size because it uses a function called stackImages which I found online (https://www.computervision.zone/topic/chapter-8-contour-shape-detection/) which requires it to be even. It gives the score from the compare_frame_change_detection provided and shows in a single image.
+ * The values I tried are 1, 100, 500, 1000, 5000, 10000. Beyond 1000 scores became unreliable and the score values for 1,100, 1000 were almost similar with a deviation of around 200 for min_contour_area = 1 with the rest.
    
 ##### Question 4:What you would suggest to implement to improve data collection of unique cases in future?
 
 * For each camera keep the images corresponding to it in a seperate folder. This would be the first one :) as it makes life easier.
 * Secondly if they are from the same camera I beleive they should be of the same dimension which is not the case in the given dataset and should be stored with the same dimension.
 * The naming convention of the image stored should be constant. Two different ways images were saved. One with timestamp value and the second with the value itself.
-* Also in my opinion to make life easier timestamp should be in UTC and not in local timezone. However, this may be irrelevant :). 
+* Also in my opinion to make life easier timestamp should be in UTC and not in local timezone. However, this might be just my frustration speaking out :). 
 
  
 ##### Question 5:Any other comments about your solution?
