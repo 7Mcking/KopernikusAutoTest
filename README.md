@@ -15,8 +15,7 @@
   
 ##### Question 2:How does you program work?
 
-* In terms of executing the code itself its pretty simple in the deleteDuplicates.py file if you pass the folder path to main("FolderPath") it will procede to do the rest.
-* Or you can run from terminal by providing folder path like: python deleteDuplicates.py --folderPath 
+* In terms of executing the code itself its pretty simple in the deleteDuplicates.py file if you pass the folder path to main("FolderPath") it will procede to do the rest. Or one can run from terminal by providing folder path like: python deleteDuplicates.py --folderPath. More on it at the end! 
 * The logic of the code is:
   * The function get_dir_info creates a summary of the folder and images from each camera given in the folder. It is saved in dirInfo
     * It is used to keep track of the state and at the end of the main loop it is saved as .pkl in the cwd
@@ -46,3 +45,6 @@
  
 ##### Question 5:Any other comments about your solution?
 * Nothing more. I guess I have said enough :). I hope to hear from you guys soon! Fingers crossed!
+
+## Running the Program:
+
