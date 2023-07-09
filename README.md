@@ -26,7 +26,7 @@
 
 ##### Question 3:What values did you decide to use for input parameters and how did you find these values?
 
-* Oh! Its a really good question and thank god it was listed in the assignment itself :). So there were 4 parameters I figure out:
+* Oh! Its a really good question! This was that made me think about my strategy. So there were 4 parameters I figure out:
 * These are Image dimensions to be used to compare, Gaussian Blur, score, min_area_contour,
 * Except one anamoly of (6,10) image size the smallest is dimension is 480. I took half of it as the image size to compare. Can be even smaller to make it faster! 
 * For Gaussian blur I took the radius to be 3. 
