@@ -31,10 +31,10 @@
 * Except one anamoly of (6,10) image size the smallest is dimension is 480. I took half of it as the image size to compare. Can be even smaller to make it faster! 
 * For Gaussian blur I took the radius to be 3. 
 * For score threshold I have made a function which compares two images given the process mentioned in the pdf doc. Since I was not supposed to come up with the algo I didn't delved into it oo much. But there are resouces online which recommend to use hash functions. However, I haven't checked if they are faster.
- * The score was zero for same images or almost similar images. It increased as the images had varied illumination or an object present which wasn't there in the scene before.
+  * The score was zero for same images or almost similar images. It increased as the images had varied illumination or an object present which wasn't there in the scene before.
 * Coming to the last part selecting min_contour_area. I have created a function called compareDifferentContourAreaValues.
- * It requires 2 images and a list of  of values one would like to try. This has to be even in size because it uses a function called stackImages which I found online (https://www.computervision.zone/topic/chapter-8-contour-shape-detection/) which requires it to be even. It gives the score from the compare_frame_change_detection provided and shows in a single image.
- * The values I tried are 1, 100, 500, 1000, 5000, 10000. Beyond 1000 scores became unreliable and the score values for 1,100, 1000 were almost similar with a deviation of around 200 for min_contour_area = 1 with the rest.
+  * It requires 2 images and a list of  of values one would like to try. This has to be even in size because it uses a function called stackImages which I found online (https://www.computervision.zone/topic/chapter-8-contour-shape-detection/) which requires it to be even. It gives the score from the compare_frame_change_detection provided and shows in a single image.
+  * The values I tried are 1, 100, 500, 1000, 5000, 10000. Beyond 1000 scores became unreliable and the score values for 1,100, 1000 were almost similar with a deviation of around 200 for min_contour_area = 1 with the rest.
    
 ##### Question 4:What you would suggest to implement to improve data collection of unique cases in future?
 
