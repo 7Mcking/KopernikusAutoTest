@@ -1,4 +1,6 @@
 # Created by mcking at 09.07.23
+from email.policy import default
+
 from imaging_interview import *
 import cv2
 from imutils import paths
@@ -404,9 +406,10 @@ if __name__ == '__main__':
     start = time()
 
     parser = argparse.ArgumentParser(description='Find Duplicate Images in a folder')
-    parser.add_argument('--folderPath', type=str, help='Path to the folder containing images')
-    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area')
-    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius')
+    parser.add_argument('--folderPath', type=str, help='Path to the folder containing images', required=True,
+                        default='./dataset')
+    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default = 500)
+    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius', default=5)
 
     args = parser.parse_args()
     folderPath = args.folderPath
@@ -417,7 +420,9 @@ if __name__ == '__main__':
         main(folderPath, min_contour_area, gaussianBlur)
 
     else:
-        folderPath = "/Users/mcking/PycharmProjects/Kopernikus_Auto/dataset/"
+        folderPath = "./dataset"
+        min_contour_area = 500
+        gaussianBlur = 5
         main(folderPath, 100, [5, 5])
 
     end = time()
