@@ -56,8 +56,8 @@ At First, install libraries
 
  
 ##### Question 5:Any other comments about your solution?
-* Yes for some reason camera 20 takes considerably greater amount of time in getting duplicates also it doesn't do a god job in removing the dublicates! Stoll figuring out.
-* I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
+* Yes for some reason camera 20 takes considerably greater amount of time in getting duplicates also it doesn't do a god job in removing the duplicates! Still figuring out.
+* I guess this is all 😊. Looking forward to hear from you guys soon! Fingers crossed!
 
 
   
