@@ -254,7 +254,7 @@ def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gau
                     else:
                         if preprocessed_img1.shape != resizeImage:
                             preprocessed_img1 = cv2.resize(preprocessed_img1, resizeImage)
-                        if preprocessed_img2.shape != (240, 320):
+                        if preprocessed_img2.shape != resizeImage:
                             preprocessed_img2 = cv2.resize(preprocessed_img2, resizeImage)
 
                     # Compare the images
@@ -299,7 +299,7 @@ def getInfoFromExistingDirInfoFile(dirInfoFile: dict) -> None:
     print("----------------------------------------------------------------")
     print(f"Images Unprocessed: {dirInfoFile['ImagesUnprocessed']}")
     print("----------------------------------------------------------------")
-    print(f"Total Unique Cameras found:{len({dirInfoFile['UniqueCameraNumbers']})} and they are"
+    print(f"Total Unique Cameras found:{len(dirInfoFile['UniqueCameraNumbers'])} and they are"
           f" {dirInfoFile['UniqueCameraNumbers']}")
     print("----------------------------------------------------------------")
     getCameraInfo(dirInfoFile)
@@ -334,7 +334,7 @@ def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
         userResponse = input("Enter your response: ")
 
         if userResponse == 'y':
-            for duplicate in dirInfoFile['DuplicatePathsList']:
+            for duplicate in dirInfoFile['DuplicatePathsList'][0]:
                 os.remove(duplicate)
             return print("Duplicates removed")
             break
@@ -347,25 +347,26 @@ def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
             print("----------------------------------------------------------------")
 
 
-def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, int]) -> dict:
+def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, int],
+                       resizeImage: tuple[int, int] = None) -> dict:
     dirInfo = get_dir_info(folderPath)
     getCameraInfo(dirInfo)
 
     dirInfo['DuplicatePathsList'] = []
     print("----------------------------------------------------------------")
     print("Now Starting finding duplicate Images for each camera")
-    for i, value in enumerate(dirInfo['UniqueCameraNumbers']):
+    for i, value in enumerate(sorted(dirInfo['UniqueCameraNumbers'])):
         print("----------------------------------------------------------------")
         print(f"Finding Duplicate Images for Camera {value}")
         pathList = dirInfo[f'ImagePathsForCamera{value}']
         duplicate_images = find_duplicate_images(pathList, min_contour_area,
-                                                 gaussianBlurRadius=gaussianBlur)
+                                                 gaussianBlurRadius=gaussianBlur, resizeImage=resizeImage)
         dirInfo.setdefault(f'DuplicatePathListForCamera{value}', []).append(duplicate_images['DuplicateList'])
         dirInfo['DuplicatePathsList'].append(duplicate_images['DuplicateList'])
 
     print("----------------------------------------------------------------")
 
-    totalDuplicates = len(dirInfo['DuplicatePathsList'])
+    totalDuplicates = len(dirInfo['DuplicatePathsList'][0])
 
     with open('./dirInfo.pkl', 'wb') as f:
         pickle.dump(dirInfo, f)
@@ -373,7 +374,7 @@ def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, in
     return dirInfo, totalDuplicates
 
 
-def main(folder: str, min_contour_area: int, gaussianBlur: [int, int]) -> None:
+def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeImage = None) -> None:
     dirInfoFile = './dirInfo.pkl'
     if os.path.exists(dirInfoFile):
         print("Directory Information File exists. Would you like to use it? (y/n)")
@@ -389,11 +390,11 @@ def main(folder: str, min_contour_area: int, gaussianBlur: [int, int]) -> None:
             print("----------------------------------------------------------------")
             print("Creating a new one...")
             print("----------------------------------------------------------------")
-            dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur)
+            dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur,resizeImage=resizeImage)
             processUserInput(dirInfo, totalDuplicates)
     else:
         print("Creating a new one...")
-        dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur)
+        dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur, resizeImage=resizeImage)
         processUserInput(dirInfo, totalDuplicates)
 
 
@@ -404,24 +405,30 @@ if __name__ == '__main__':
     start = time()
 
     parser = argparse.ArgumentParser(description='Find Duplicate Images in a folder')
-    parser.add_argument('--folderPath', type=str, help='Path to the folder containing images', required=True,
-                        default='./dataset')
-    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default = 500)
-    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius', default=5)
+    parser.add_argument('--folderPath', type=str, help='Path to the folder containing images',
+                        argument_default='./dataset',required=True,
+                        )
+    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', argument_default = 500)
+    parser.add_argument('--gaussianBlur', type=list[int,int], nargs='+', help='Gaussian Blur Radius',
+                        argument_default=[5,5])
+    parser.add_argument('--resizeImage', type=tuple[int, int], nargs='+', help='Resize Image',
+                        argument_default=(240,240))
 
     args = parser.parse_args()
     folderPath = args.folderPath
     min_contour_area = args.minContourArea
     gaussianBlur = args.gaussianBlur
+    resizeImage = args.resizeImage
 
-    if len(args) != 0:
-        main(folderPath, min_contour_area, gaussianBlur)
+    if args is not None:
+        main(folderPath, min_contour_area, gaussianBlur,resizeImage)
 
     else:
         folderPath = "./dataset"
         min_contour_area = 500
         gaussianBlur = 5
-        main(folderPath, min_contour_area, [5, 5])
+        resizeImage = (240, 240)
+        main(folderPath, 100, [5, 5], resizeImage)
 
     end = time()
     totalTimeInMinutes = round((end - start) / 60)
