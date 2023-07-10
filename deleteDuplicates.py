@@ -1,5 +1,4 @@
 # Created by mcking at 09.07.23
-from email.policy import default
 from imaging_interview import *
 import cv2
 from imutils import paths
