@@ -46,6 +46,9 @@
 * Nothing more. I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
 
 ## Running the Program:
+At First, install libraries
+* pip install -r requirements.txt 
+
 2 Ways:
 1. From terminal
   * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur
