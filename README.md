@@ -7,7 +7,7 @@ At First, install libraries
 2 Ways:
 1. From terminal
    * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
-   * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur [5,5] --resizeImage (240,240)
+   * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240
 2. From IDE by setting the required parameters using the main() function
 3. Total files remaining at the end are :
   * Total Number of files for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
