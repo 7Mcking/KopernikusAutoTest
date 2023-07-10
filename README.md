@@ -11,7 +11,7 @@
   *  **Total Number of files for Camera 21** : 146
   *  **Total Number of files for Camera 10** : 126, Total duplicates around 113
 *  The images are with all different lighting conditions from day to night.
-*  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't bother much with it because I haven't used it in my logic to save the images based on the day but can be easily added if needed. 
+*  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further trying to use it in my logic to remove duplicates. 
   
 ##### Question 2:How does you program work?
 
@@ -43,7 +43,7 @@
 
  
 ##### Question 5:Any other comments about your solution?
-* Nothing more. I guess I have said enough 😊. I hope to hear from you guys soon! Fingers crossed!
+* Nothing more. I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
 
 ## Running the Program:
 
