@@ -49,7 +49,7 @@
 2 Ways:
 1. From terminal
   * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur
-2. From IDE by setting the required parameters in main() function
+2. From IDE by setting the required parameters using the main() function
 
   
 
