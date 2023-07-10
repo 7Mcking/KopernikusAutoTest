@@ -7,9 +7,9 @@
 * **Unique Image Shapes**: {(619, 1100), (6, 10), (1520, 2688), (480, 640), (675, 1200), (1080, 1920)}
 * Total Files in Directory: 1080, Total Images Processed: 1079, Images Unprocessed: 1. Unprocessed path can be found from dirInfo. More about it later.
   *  **Total Number of files for Camera 23** : 484
-  *  **Total Number of files for Camera 20** : 324, Result: Total Duplicates around 244
+  *  **Total Number of files for Camera 20** : 324, 
   *  **Total Number of files for Camera 21** : 146
-  *  **Total Number of files for Camera 10** : 126, Total duplicates around 113
+  *  **Total Number of files for Camera 10** : 126, 
 *  The images are with all different lighting conditions from day to night.
 *  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further trying to use it in my logic to remove duplicates. 
   
