@@ -51,7 +51,7 @@ At First, install libraries
 
 2 Ways:
 1. From terminal
-  * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur
+  * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
 2. From IDE by setting the required parameters using the main() function
 
   
