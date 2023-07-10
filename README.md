@@ -38,7 +38,7 @@
 
 * For each camera keep the images corresponding to it in a seperate folder. This would be the first one 😊 as it makes life easier.
 * Secondly, if they are from the same camera I beleive they should be of the same dimension which is not the case in the given dataset and should be stored with the same dimension.
-* The naming convention of the image stored should be constant. Two different ways images were saved. One with timestamp value and the second with the datetime value itself.
+* The naming convention of the image stored should be constant. For camera 20 Two different ways images were saved, one with timestamp value and the second with the datetime value itself. **This increases the processing time!**
 * Also in my opinion to make life easier timestamp should be in UTC and not in local timezone. However, this might be just my frustration speaking out 😊. 
 
  
