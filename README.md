@@ -10,7 +10,7 @@ At First, install libraries
    * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240
 2. From IDE by setting the required parameters using the main() function
 3. Total files remaining at the end are :
-  * Total Number of files for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
+  * Total Number of files left at the end for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
 
 
 ##### Question 1:What did you learn after looking on our dataset?
@@ -19,10 +19,10 @@ At First, install libraries
 * Hence I have compared same camera images with each other as it didn't made sense to me to compare with other cameras using compare_frames_change_detection given by you.
 * **Unique Image Shapes**: {(619, 1100), (6, 10), (1520, 2688), (480, 640), (675, 1200), (1080, 1920)}. ***But I have added a part if the image size is (6,10) or if the file can't be processed it should remove it.***  
 * Total Files in Directory: 1080, Total Images Processed: 1079, Images Unprocessed: 1. Unprocessed path can be found from dirInfo. More about it later.
-  *  **Total Number of files for Camera 23** : 484
-  *  **Total Number of files for Camera 20** : 324, 
-  *  **Total Number of files for Camera 21** : 146
-  *  **Total Number of files for Camera 10** : 126, 
+  *  **Total Number of files for Camera 23** : 484, Left: 40
+  *  **Total Number of files for Camera 20** : 324, Left: 108
+  *  **Total Number of files for Camera 21** : 146, Left: 46
+  *  **Total Number of files for Camera 10** : 126, Left: 19
 *  The images are with all different lighting conditions from day to night.
 *  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further to use it in my logic to remove duplicates nut can be implemented. 
   
@@ -56,7 +56,8 @@ At First, install libraries
 
  
 ##### Question 5:Any other comments about your solution?
-* Nothing more. I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
+* Yes for some reason camera 20 takes considerably greater amount of time in getting duplicates also it doesn't do a god job in removing the dublicates! Stoll figuring out.
+* I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
 
 
   
