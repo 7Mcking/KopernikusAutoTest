@@ -1,6 +1,5 @@
 # Created by mcking at 09.07.23
 from email.policy import default
-
 from imaging_interview import *
 import cv2
 from imutils import paths
@@ -423,7 +422,7 @@ if __name__ == '__main__':
         folderPath = "./dataset"
         min_contour_area = 500
         gaussianBlur = 5
-        main(folderPath, 100, [5, 5])
+        main(folderPath, min_contour_area, [5, 5])
 
     end = time()
     totalTimeInMinutes = round((end - start) / 60)
