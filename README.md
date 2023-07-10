@@ -1,4 +1,15 @@
-### KopernikusAutoTest
+## KopernikusAutoTest
+
+### Running the Program:
+At First, install libraries
+* pip install -r requirements.txt 
+
+2 Ways:
+1. From terminal
+   * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
+   * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur [5,5] --resizeImage (240,240)
+2. From IDE by setting the required parameters using the main() function
+
 
 ##### Question 1:What did you learn after looking on our dataset?
 
@@ -45,15 +56,6 @@
 ##### Question 5:Any other comments about your solution?
 * Nothing more. I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
 
-## Running the Program:
-At First, install libraries
-* pip install -r requirements.txt 
-
-2 Ways:
-1. From terminal
-   * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
-   * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur [5,5] --resizeImage (240,240)
-2. From IDE by setting the required parameters using the main() function
 
   
 
