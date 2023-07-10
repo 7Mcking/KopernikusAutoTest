@@ -5,14 +5,21 @@ from imutils import paths
 import os
 import numpy as np
 import pickle
+from tqdm import tqdm
 
 
-def compare2TestImages(imgPath1: str, imgPath2: str, minContourArea: int) \
+def areAllElementsUnique(lst: list):
+    return len(lst) == len(set(lst))
+
+
+def compare2TestImages(imgPath1: str, imgPath2: str, minContourArea: int, gaussianBlurRadius: [int, int]) \
         -> np.ndarray:
     """
     Compare two images and return their comparison scores along with their
     times
 
+    :param minContourArea: Minimum contour area
+    :param gaussianBlurRadius: Radius for gaussian blur
     :param imgPath1: path to the first image
     :param imgPath2: path to the second image
     :return: np.ndarray
@@ -23,8 +30,8 @@ def compare2TestImages(imgPath1: str, imgPath2: str, minContourArea: int) \
     img1 = cv2.imread(imagePath1)
     img2 = cv2.imread(imagePath2)
 
-    gray1 = preprocess_image_change_detection(img1, [3, 3])
-    gray2 = preprocess_image_change_detection(img2, [3, 3])
+    gray1 = preprocess_image_change_detection(img1, gaussianBlurRadius)
+    gray2 = preprocess_image_change_detection(img2, gaussianBlurRadius)
 
     resizeDim = (240, 240)
 
@@ -197,125 +204,222 @@ def get_dir_info(folderPath: str) -> dict:
     return dirInfo
 
 
-def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussian_blur_radius_list: list = None) \
-        -> dict:
+def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussianBlurRadius: int = None,
+                          resizeImage: tuple[int, int] = None) -> dict:
     """
     Find duplicate images from a folderPathLists
 
+    :param resizeImage: tuple of (width, height) to resize the image
     :param folderPathLists: Optional list of PathLists specifying from which Camera
-    :param folderPath: path to folder
     :param min_contour_area: Minimum Contour Area
-    :param gaussian_blur_radius_list: gaussian blur radius in x and y directions
+    :param gaussianBlurRadius: gaussian blur radius in x and y directions
     :return:
     """
 
     image_paths = folderPathLists
+    # Dictionary to store the duplicate images
     duplicates = {'DuplicateList': []}
 
     # Compare each pair of image
-    for i in range(len(image_paths)):
-        for j in range(i, len(image_paths)):
 
+    for i in tqdm(range(len(image_paths)), desc="Processing..."):
+
+        for j in range(len(image_paths)):
+
+            # Check if the image paths are not the same
             if image_paths[i] != image_paths[j]:
-                if image_paths[i] not in duplicates['DuplicateList']:
+                # Check if the image paths are not already in the duplicate list
+                if (image_paths[i] not in duplicates['DuplicateList']) and \
+                        (image_paths[j] not in duplicates['DuplicateList']):
                     imagePath1 = image_paths[i]
                     imagePath2 = image_paths[j]
-
+                    # Load the images
                     image1 = cv2.imread(imagePath1)
                     image2 = cv2.imread(imagePath2)
 
-                    # Load the image
+                    # Preprocess the images
                     try:
-                        preprocessed_img1 = preprocess_image_change_detection(image1, gaussian_blur_radius_list)
-                        preprocessed_img2 = preprocess_image_change_detection(image2, gaussian_blur_radius_list)
+                        preprocessed_img1 = preprocess_image_change_detection(image1, gaussianBlurRadius)
+                        preprocessed_img2 = preprocess_image_change_detection(image2, gaussianBlurRadius)
                     except AttributeError:
                         pass
 
-                    if preprocessed_img1.shape != (240, 320):
-                        preprocessed_img1 = cv2.resize(preprocessed_img1, (240, 320))
-                    if preprocessed_img2.shape != (240, 320):
-                        preprocessed_img2 = cv2.resize(preprocessed_img2, (240, 320))
+                    # Resize the images to 240x240
 
+                    if resizeImage is None:
+                        if preprocessed_img1.shape != (240, 240):
+                            preprocessed_img1 = cv2.resize(preprocessed_img1, (240, 240))
+                        if preprocessed_img2.shape != (240, 240):
+                            preprocessed_img2 = cv2.resize(preprocessed_img2, (240, 240))
+                    else:
+                        if preprocessed_img1.shape != resizeImage:
+                            preprocessed_img1 = cv2.resize(preprocessed_img1, resizeImage)
+                        if preprocessed_img2.shape != (240, 320):
+                            preprocessed_img2 = cv2.resize(preprocessed_img2, resizeImage)
+
+                    # Compare the images
                     if preprocessed_img1.shape == preprocessed_img2.shape:
                         score, _, _ = compare_frames_change_detection(preprocessed_img1, preprocessed_img2,
                                                                       min_contour_area)
                     else:
                         break
 
+                    # If the score is less than 2500, then the images are duplicates
                     if score < 2500:
                         # Add duplicates found to the duplicate dict
-                        if imagePath2 not in duplicates:
+                        if imagePath2 not in duplicates['DuplicateList']:
                             duplicates['DuplicateList'].append(imagePath2)
                 else:
                     pass
+            else:
+                pass
 
-    return duplicates
+    if areAllElementsUnique(duplicates['DuplicateList']):
+        print("All Unique duplicates found")
+        print("----------------------------------------------")
+        print(f"Total Unique Duplicates Found: {len(duplicates['DuplicateList'])}")
+        return duplicates
+    else:
+        print("The duplicates are not unique")
+        raise AssertionError
 
 
-def main(folder: str, min_contour_area: int) -> None:
-    dirInfo = get_dir_info(folder)
+def getInfoFromExistingDirInfoFile(dirInfoFile: dict) -> None:
+    """
+
+    :param dirInfoFile: path to directory information file
+    """
     print("Directory Information has been processed")
     print("----------------------------------------------------------------")
-    print(f"Unique Image Shapes: {dirInfo['UniqueShapes']}")
+    print(f"Unique Image Shapes: {dirInfoFile['UniqueShapes']}")
     print("----------------------------------------------------------------")
-    print(f"Total Files in Directory: {dirInfo['TotalFiles']}")
+    print(f"Total Files in Directory: {dirInfoFile['TotalFiles']}")
     print("----------------------------------------------------------------")
-    print(f"Total Images Processed: {dirInfo['ImagesProcessed']}")
+    print(f"Total Images Processed: {dirInfoFile['ImagesProcessed']}")
     print("----------------------------------------------------------------")
-    print(f"Images Unprocessed: {dirInfo['ImagesUnprocessed']}")
+    print(f"Images Unprocessed: {dirInfoFile['ImagesUnprocessed']}")
     print("----------------------------------------------------------------")
-    print(f"Total Unique Cameras found:{len({dirInfo['UniqueCameraNumbers']})} and they are"
-          f" {dirInfo['UniqueCameraNumbers']}")
+    print(f"Total Unique Cameras found:{len({dirInfoFile['UniqueCameraNumbers']})} and they are"
+          f" {dirInfoFile['UniqueCameraNumbers']}")
     print("----------------------------------------------------------------")
-    for i, value in enumerate(dirInfo['UniqueCameraNumbers']):
-        print(f"Total Number of files for Camera {value} : {len(dirInfo[f'ImagePathsForCamera{value}'])}")
+    getCameraInfo(dirInfoFile)
+
+
+def getCameraInfo(dirInfoFile: dict) -> None:
+    """
+
+    :param dirInfoFile: path to directory information file
+    """
+    for i, uniqueCamera in enumerate(dirInfoFile['UniqueCameraNumbers']):
+        print(
+            f"Total Number of files for Camera {uniqueCamera} : "
+            f"{len(dirInfoFile[f'ImagePathsForCamera{uniqueCamera}'])}")
         print("----------------------------------------------------------------")
-    print()
+
+
+def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
+    """
+
+    :param dirInfoFile: path to directory information file
+    :param totalDuplicates: length of the duplicate list from the directory information file
+    """
+    print(f"Total Number of duplicates found {totalDuplicates}")
     print("----------------------------------------------------------------")
-    print("-----Now Starting finding duplicate Images for each camera------")
-    for i, value in enumerate(dirInfo['UniqueCameraNumbers']):
-        pathList = dirInfo[f'ImagePathsForCamera{value}']
-        duplicate_images = find_duplicate_images(folder, min_contour_area)
+    print("Removing Duplicates from the directory")
+    print("----------------------------------------------------------------")
+
+    while True:
+        print("Do you want to remove the duplicates? (y/n). Note: This cannot be undone. "
+              "The input is Case Sensitive")
+        userResponse = input("Enter your response: ")
+
+        if userResponse == 'y':
+            for duplicate in dirInfoFile['DuplicatePathsList']:
+                os.remove(duplicate)
+            return print("Duplicates removed")
+            break
+        elif userResponse == 'n':
+            print("----------------------------------------------------------------")
+            return print("Duplicates not removed")
+            break
+        else:
+            print("Invalid Response")
+            print("----------------------------------------------------------------")
+
+
+def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, int]) -> dict:
+    dirInfo = get_dir_info(folderPath)
+    getCameraInfo(dirInfo)
+
     dirInfo['DuplicatePathsList'] = []
-    dirInfo['DuplicatePathsList'].append(duplicate_images['DuplicateList'])
-    totalDuplicates = len(duplicate_images)
+    print("----------------------------------------------------------------")
+    print("Now Starting finding duplicate Images for each camera")
+    for i, value in enumerate(dirInfo['UniqueCameraNumbers']):
+        print("----------------------------------------------------------------")
+        print(f"Finding Duplicate Images for Camera {value}")
+        pathList = dirInfo[f'ImagePathsForCamera{value}']
+        duplicate_images = find_duplicate_images(pathList, min_contour_area,
+                                                 gaussianBlurRadius=gaussianBlur)
+        dirInfo.setdefault(f'DuplicatePathListForCamera{value}', []).append(duplicate_images['DuplicateList'])
+        dirInfo['DuplicatePathsList'].append(duplicate_images['DuplicateList'])
+
+    print("----------------------------------------------------------------")
+
+    totalDuplicates = len(dirInfo['DuplicatePathsList'])
 
     with open('./dirInfo.pkl', 'wb') as f:
         pickle.dump(dirInfo, f)
 
-    for duplicate in duplicate_images['DuplicateList']:
-        os.remove(duplicate)
+    return dirInfo, totalDuplicates
 
-    print(f"Removed duplicates, Total Number of duplicates found {totalDuplicates}")
+
+def main(folder: str, min_contour_area: int, gaussianBlur: [int, int]) -> None:
+    dirInfoFile = './dirInfo.pkl'
+    if os.path.exists(dirInfoFile):
+        print("Directory Information File exists. Would you like to use it? (y/n)")
+        choice = input("Enter your choice: ")
+        if choice == 'y':
+            with open(dirInfoFile, 'rb') as f:
+                dirInfo = pickle.load(f)
+                getInfoFromExistingDirInfoFile(dirInfo)
+                getCameraInfo(dirInfo)
+                totalDuplicates = len(dirInfo['DuplicatePathsList'])
+                processUserInput(dirInfo, totalDuplicates)
+        elif choice == 'n':
+            print("----------------------------------------------------------------")
+            print("Creating a new one...")
+            print("----------------------------------------------------------------")
+            dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur)
+            processUserInput(dirInfo, totalDuplicates)
+    else:
+        print("Creating a new one...")
+        dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur)
+        processUserInput(dirInfo, totalDuplicates)
 
 
 if __name__ == '__main__':
     from time import time
+    import argparse
 
     start = time()
-    folderPath = "/Users/mcking/PycharmProjects/Kopernikus_Auto/dataset/"
-    # duplicates = find_duplicate_images(folderPath, min_contour_area=500)
-    try:
-        with open('./dirInfo.pkl', 'rb') as f:
-            dirInfo = pickle.load(f)
-    except Exception as e:
-        dirInfo = get_dir_info(folderPath)
 
-    print("Done processing Directory Information")
-    print("----------------------------------------------------------------")
-    print(f"Unique Image Shapes: {dirInfo['UniqueShapes']}")
-    print("----------------------------------------------------------------")
-    print(f"Total Files in Directory: {dirInfo['TotalFiles']}")
-    print("----------------------------------------------------------------")
-    print(f"Total Images Processed: {dirInfo['ImagesProcessed']}")
-    print("----------------------------------------------------------------")
-    print(f"Images Unprocessed: {dirInfo['ImagesUnprocessed']}")
-    print("----------------------------------------------------------------")
-    print(f"Total Unique Cameras found:{len({dirInfo['UniqueCameraNumbers']})} and they are"
-          f" {dirInfo['UniqueCameraNumbers']}")
-    camera10Duplicates = find_duplicate_images(folderPathLists=dirInfo['ImagePathsForCamera20'], min_contour_area=500,
-                                               gaussian_blur_radius_list=[3, 3])
+    parser = argparse.ArgumentParser(description='Find Duplicate Images in a folder')
+    parser.add_argument('--folderPath', type=str, help='Path to the folder containing images')
+    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area')
+    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius')
+
+    args = parser.parse_args()
+    folderPath = args.folderPath
+    min_contour_area = args.minContourArea
+    gaussianBlur = args.gaussianBlur
+
+    if len(args) != 0:
+        main(folderPath, min_contour_area, gaussianBlur)
+
+    else:
+        folderPath = "/Users/mcking/PycharmProjects/Kopernikus_Auto/dataset/"
+        main(folderPath, 100, [5, 5])
+
     end = time()
     totalTimeInMinutes = round((end - start) / 60)
     print(f"Total Execution time in minutes: {totalTimeInMinutes} minutes")
-    print(camera10Duplicates)
