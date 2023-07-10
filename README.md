@@ -46,4 +46,11 @@
 * Nothing more. I guess I have said enough 😊. I hope my sollution impresses you and looking forward to hear from you guys soon! Fingers crossed!
 
 ## Running the Program:
+2 Ways:
+1. From terminal
+  * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur
+2. From IDE by setting the required parameters in main() function
+
+  
+
 
