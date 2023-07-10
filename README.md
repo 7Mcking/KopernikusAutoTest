@@ -11,6 +11,7 @@ At First, install libraries
 2. From IDE by setting the required parameters using the main() function
 3. Total files remaining at the end are :
   * Total Number of files left at the end for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
+  * To process all the images it took around 38 minutes on my PC.
 
 
 ##### Question 1:What did you learn after looking on our dataset?
