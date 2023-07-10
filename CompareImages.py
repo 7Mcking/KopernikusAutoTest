@@ -3,12 +3,14 @@ from deleteDuplicates import compare2TestImages, compareDifferentCountourAreaVal
 import cv2
 
 if __name__ == '__main__':
-    imagePath1 = '/Users/mcking/PycharmProjects/Kopernikus_Auto/dataset/c10-1623873575337.png'
-    imagePath2 = '/Users/mcking/PycharmProjects/Kopernikus_Auto/dataset/c10-1623899361010.png'
+
+    imagePath1 = './dataset/c10-1623871098865.png'
+    imagePath2 = './dataset/c10-1623872887821.png'
 
     minContourAreaList = 500
     gaussianBlurRadius = [5,5]
     completeStack = compare2TestImages(imagePath1, imagePath2, minContourAreaList, gaussianBlurRadius)
+    cv2.imwrite("StackedImages.png", completeStack)
 
     cv2.imshow("Stacked images", completeStack)
     cv2.waitKey(0)

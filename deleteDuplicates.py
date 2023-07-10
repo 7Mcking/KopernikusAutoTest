@@ -210,7 +210,7 @@ def get_dir_info(folderPath: str) -> dict:
     return dirInfo
 
 
-def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussianBlurRadius: int = None,
+def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussianBlurRadius: list[int,int] = None,
                           resizeImage: tuple[int, int] = None) -> dict:
     """
     Find duplicate images from a folderPathLists
@@ -432,16 +432,16 @@ if __name__ == '__main__':
                         default='./dataset',required=True,
                         )
     parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default = 500)
-    parser.add_argument('--gaussianBlur', type=list[int,int], nargs='+', help='Gaussian Blur Radius',
+    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius',
                         default=[5,5])
-    parser.add_argument('--resizeImage', type=tuple[int, int], nargs='+', help='Resize Image',
+    parser.add_argument('--resizeImage', type=int, nargs='+', help='Resize Image',
                         default=(240,240))
 
     args = parser.parse_args()
     folderPath = args.folderPath
     min_contour_area = args.minContourArea
-    gaussianBlur = args.gaussianBlur
-    resizeImage = args.resizeImage
+    gaussianBlur: list[int,int] = args.gaussianBlur
+    resizeImage: tuple[int,int] = args.resizeImage
 
     if args is not None:
         main(folderPath, min_contour_area, gaussianBlur,resizeImage)
