@@ -140,6 +140,7 @@ def get_dir_info(folderPath: str) -> dict:
                'ImagesUnprocessed': [],
                'ImagesUnprocessedPaths': [],
                'UniqueCameraNumbers': [],
+               'PathsDeleted': [],
                }
 
     # Get the images in the directory
@@ -188,9 +189,14 @@ def get_dir_info(folderPath: str) -> dict:
         try:
             shape = image.shape
             images_processed += 1
+            if shape == (6, 10):
+                os.remove(image_path)
+                dirInfo['PathsDeleted'].append(image_path)
+                continue
         except AttributeError:
             images_unprocessed += 1
-            dirInfo['ImagesUnprocessedPaths'].append(image_path)
+            dirInfo['PathsDeleted'].append(image_path)
+            os.remove(image_path)
             pass
 
         # Add the shape to the set of unique shapes
@@ -261,14 +267,11 @@ def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gau
                     if preprocessed_img1.shape == preprocessed_img2.shape:
                         score, _, _ = compare_frames_change_detection(preprocessed_img1, preprocessed_img2,
                                                                       min_contour_area)
-                    else:
-                        break
 
                     # If the score is less than 2500, then the images are duplicates
                     if score < 2500:
-                        # Add duplicates found to the duplicate dict
-                        if imagePath2 not in duplicates['DuplicateList']:
-                            duplicates['DuplicateList'].append(imagePath2)
+                        # Add duplicates found to the duplicate dictionary
+                        duplicates['DuplicateList'].append(imagePath2)
                 else:
                     pass
             else:
@@ -299,6 +302,8 @@ def getInfoFromExistingDirInfoFile(dirInfoFile: dict) -> None:
     print("----------------------------------------------------------------")
     print(f"Images Unprocessed: {dirInfoFile['ImagesUnprocessed']}")
     print("----------------------------------------------------------------")
+    print(f"Images deleted: {dirInfoFile['PathsDeleted']}")
+    print("----------------------------------------------------------------")
     print(f"Total Unique Cameras found:{len(dirInfoFile['UniqueCameraNumbers'])} and they are"
           f" {dirInfoFile['UniqueCameraNumbers']}")
     print("----------------------------------------------------------------")
@@ -307,9 +312,9 @@ def getInfoFromExistingDirInfoFile(dirInfoFile: dict) -> None:
 
 def getCameraInfo(dirInfoFile: dict) -> None:
     """
-
     :param dirInfoFile: path to directory information file
     """
+
     for i, uniqueCamera in enumerate(dirInfoFile['UniqueCameraNumbers']):
         print(
             f"Total Number of files for Camera {uniqueCamera} : "
@@ -331,11 +336,12 @@ def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
     while True:
         print("Do you want to remove the duplicates? (y/n). Note: This cannot be undone. "
               "The input is Case Sensitive")
-        userResponse = input("Enter your response: ")
+        userResponse = input("> Enter your response: ")
 
         if userResponse == 'y':
-            for duplicate in dirInfoFile['DuplicatePathsList'][0]:
-                os.remove(duplicate)
+            for duplicateList in dirInfoFile['DuplicatePathsList']:
+                for eachFile in duplicateList:
+                    os.remove(eachFile)
             return print("Duplicates removed")
             break
         elif userResponse == 'n':
@@ -349,12 +355,18 @@ def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
 
 def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, int],
                        resizeImage: tuple[int, int] = None) -> dict:
+    # Get the directory information
     dirInfo = get_dir_info(folderPath)
+    # Get the unique shapes and Camera Numbers
     getCameraInfo(dirInfo)
 
+    # Create an empty list of duplicate paths
     dirInfo['DuplicatePathsList'] = []
+
     print("----------------------------------------------------------------")
     print("Now Starting finding duplicate Images for each camera")
+
+    # Find the duplicate images for each camera and add them to the duplicate list
     for i, value in enumerate(sorted(dirInfo['UniqueCameraNumbers'])):
         print("----------------------------------------------------------------")
         print(f"Finding Duplicate Images for Camera {value}")
@@ -366,8 +378,12 @@ def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, in
 
     print("----------------------------------------------------------------")
 
-    totalDuplicates = len(dirInfo['DuplicatePathsList'][0])
+    # Get the total number of duplicates
+    totalDuplicates = 0
+    for i in range(len(dirInfo['DuplicatePathsList'])):
+        totalDuplicates += len((dirInfo['DuplicatePathsList'][i]))
 
+    # Save the directory information to a pickle file
     with open('./dirInfo.pkl', 'wb') as f:
         pickle.dump(dirInfo, f)
 
@@ -375,10 +391,12 @@ def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, in
 
 
 def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeImage = None) -> None:
+    # Check if the directory information file exists
     dirInfoFile = './dirInfo.pkl'
     if os.path.exists(dirInfoFile):
         print("Directory Information File exists. Would you like to use it? (y/n)")
         choice = input("Enter your choice: ")
+        # If the user wants to use the existing directory information file
         if choice == 'y':
             with open(dirInfoFile, 'rb') as f:
                 dirInfo = pickle.load(f)
@@ -386,12 +404,17 @@ def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeIma
                 getCameraInfo(dirInfo)
                 totalDuplicates = len(dirInfo['DuplicatePathsList'])
                 processUserInput(dirInfo, totalDuplicates)
+
+        # If the user wants to create a new directory information file
         elif choice == 'n':
             print("----------------------------------------------------------------")
-            print("Creating a new one...")
+            print("Creating a new one and deleting the old one...")
             print("----------------------------------------------------------------")
+            os.remove(dirInfoFile)
             dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur,resizeImage=resizeImage)
             processUserInput(dirInfo, totalDuplicates)
+
+    # If the directory information file does not exist
     else:
         print("Creating a new one...")
         dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur, resizeImage=resizeImage)
@@ -406,13 +429,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Find Duplicate Images in a folder')
     parser.add_argument('--folderPath', type=str, help='Path to the folder containing images',
-                        argument_default='./dataset',required=True,
+                        default='./dataset',required=True,
                         )
-    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', argument_default = 500)
+    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default = 500)
     parser.add_argument('--gaussianBlur', type=list[int,int], nargs='+', help='Gaussian Blur Radius',
-                        argument_default=[5,5])
+                        default=[5,5])
     parser.add_argument('--resizeImage', type=tuple[int, int], nargs='+', help='Resize Image',
-                        argument_default=(240,240))
+                        default=(240,240))
 
     args = parser.parse_args()
     folderPath = args.folderPath
