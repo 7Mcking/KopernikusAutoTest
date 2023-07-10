@@ -50,8 +50,8 @@ def compare2TestImages(imgPath1: str, imgPath2: str, minContourArea: int, gaussi
     return allStacked
 
 
-def compareDifferentCountourAreaValues(imagePath1: str, imagePath2: str, listAreaValues: list) \
-        -> np.ndarray:
+def compareDifferentCountourAreaValues(imagePath1: str, imagePath2: str, listAreaValues: list,
+                                       gaussianBlurRadius=[5,5]) -> np.ndarray:
     """
     Function to compare different countsour area values
     :param imagePath1: Path to image
@@ -65,7 +65,8 @@ def compareDifferentCountourAreaValues(imagePath1: str, imagePath2: str, listAre
         imagePath2 = ""
 
         minContourAreaList = [1, 100, 500, 1000, 5000, 10000]
-        completeStack = compareDifferentCountourAreaValues(imagePath1, imagePath2, minContourAreaList)
+        completeStack = compareDifferentCountourAreaValues(imagePath1, imagePath2, 
+        minContourAreaList, gaussianBlurRadius)
 
         cv2.imshow("Stacked images", completeStack)
         cv2.waitKey(0)
@@ -77,7 +78,7 @@ def compareDifferentCountourAreaValues(imagePath1: str, imagePath2: str, listAre
         minContourAreaList = listAreaValues
         allStacked = []
         for value in minContourAreaList:
-            temp = compare2TestImages(imagePath1, imagePath2, value)
+            temp = compare2TestImages(imagePath1, imagePath2, value, gaussianBlurRadius)
             temp = cv2.putText(temp, f"Value: {value}", (220, 220), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                                fontScale=1, color=(0, 0, 255), thickness=2)
 
