@@ -4,7 +4,7 @@
 
 * First thing that it is quite large. The photos are of a parking lot but from different angles. Total number of cameras placed are 4. Just like the assignment suggested way too many duplicates. For each camera the timestamps are taken in a 5 minute interval approximately.
 * Hence I have compared same camera images with each other as it didn't made sense to me to compare with other cameras using compare_frames_change_detection given by you.
-* **Unique Image Shapes**: {(619, 1100), (6, 10), (1520, 2688), (480, 640), (675, 1200), (1080, 1920)}
+* **Unique Image Shapes**: {(619, 1100), (6, 10), (1520, 2688), (480, 640), (675, 1200), (1080, 1920)}. ***But I have added a part if the image size is (6,10) or if the file can't be processed it should remove it.***  
 * Total Files in Directory: 1080, Total Images Processed: 1079, Images Unprocessed: 1. Unprocessed path can be found from dirInfo. More about it later.
   *  **Total Number of files for Camera 23** : 484
   *  **Total Number of files for Camera 20** : 324, 
