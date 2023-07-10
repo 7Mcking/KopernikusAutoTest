@@ -11,7 +11,7 @@
   *  **Total Number of files for Camera 21** : 146
   *  **Total Number of files for Camera 10** : 126, 
 *  The images are with all different lighting conditions from day to night.
-*  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further trying to use it in my logic to remove duplicates. 
+*  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further to use it in my logic to remove duplicates nut can be implemented. 
   
 ##### Question 2:How does you program work?
 
