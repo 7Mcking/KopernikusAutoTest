@@ -27,7 +27,7 @@
 * Oh! Its a really good question! This was that made me think about my strategy. So there were **4** parameters I figure out:
 * These are **Image dimensions** to be used to compare, **Gaussian Blur**, **score**, **min_area_contour**,
 * Except one anamoly of **(6,10)** image size the **smallest is dimension is 480**. I took **half** of it as the image size to compare. Can be even smaller to make it faster! 
-* For Gaussian blur I took the **radius to be 3**. 
+* For Gaussian blur I took the **radius to be 5**. 
 * For **score threshold** used as a comparator to add a given path to a duplicate list, I have made a function which compares two images given the process mentioned in the pdf doc. Since I was not supposed to come up with the algo I didn't delved into it oo much. But there are resouces online recommenddde to use hash functions. However, I haven't checked if they are faster.
   * The score was ***zero for same images or almost similar images***. It increased as the images had varied illumination or an object present which wasn't there in the scene before.
 * Coming to the last part selecting min_contour_area. I have created a function called **compareDifferentContourAreaValues**.
