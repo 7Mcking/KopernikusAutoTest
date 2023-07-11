@@ -5,16 +5,21 @@ At First, clone the repo and install libraries
 ```
 https://github.com/7Mcking/KopernikusAutoTest.git
 ```
-```pip install -r requirements.txt
+```
+pip install -r requirements.txt
 ```
 
 2 Ways:
 1. From terminal
-   ```python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage```
-2. Example
-   ```deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240```
-3. From IDE by setting the required parameters using the main() function
-4. Total files remaining at the end are :
+   ```
+   python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
+   ```
+3. Example
+   ```
+   deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240
+   ```
+5. From IDE by setting the required parameters using the main() function
+6. Total files remaining at the end are :
   * Total Number of files left at the end for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
   * To process all the images it took around 38 minutes on my PC.
 
