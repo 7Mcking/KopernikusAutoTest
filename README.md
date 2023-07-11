@@ -1,7 +1,9 @@
 ## KopernikusAutoTest
 
 ### Running the Program:
-At First, install libraries
+At First, clone the repo and install libraries 
+```
+https://github.com/7Mcking/KopernikusAutoTest.git
 ```
 pip install -r requirements.txt
 ```
