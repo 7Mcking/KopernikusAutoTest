@@ -2,14 +2,16 @@
 
 ### Running the Program:
 At First, install libraries
-* pip install -r requirements.txt 
+```
+pip install -r requirements.txt
+```
 
 2 Ways:
 1. From terminal
-   * python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage
-   * Example deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240
-2. From IDE by setting the required parameters using the main() function
-3. Total files remaining at the end are :
+   ```python deleteDuplicates.py --folderPath FolderPath --minContourArea minContourArea --gaussianBlur GaussianBlur --resizeImage resizeImage```
+2. Example ```deleteDuplicates.py --folderPath './dataset' --minContourArea 500 --gaussianBlur 5 5 --resizeImage 240 240```
+3. From IDE by setting the required parameters using the main() function
+4. Total files remaining at the end are :
   * Total Number of files left at the end for Camera 23, 20, 21, 10 : 40, 108, 46, 19 respectively.
   * To process all the images it took around 38 minutes on my PC.
 
@@ -21,8 +23,8 @@ At First, install libraries
 * **Unique Image Shapes**: {(619, 1100), (6, 10), (1520, 2688), (480, 640), (675, 1200), (1080, 1920)}. ***But I have added a part if the image size is (6,10) or if the file can't be processed it should remove it.***  
 * Total Files in Directory: 1080, Total Images Processed: 1079, Images Unprocessed: 1. Unprocessed path can be found from dirInfo. More about it later.
   *  **Total Number of files for Camera 23** : 484, Left: 40
-  *  **Total Number of files for Camera 20** : 324, Left: 108
   *  **Total Number of files for Camera 21** : 146, Left: 46
+  *  **Total Number of files for Camera 20** : 324, Left: 108
   *  **Total Number of files for Camera 10** : 126, Left: 19
 *  The images are with all different lighting conditions from day to night.
 *  Timestamps provided by the image I was unable to process via python datetime (SCHADE! Quite frustrating why it wont process but it worked online using this website https://www.epochconverter.com/). I didn't try further to use it in my logic to remove duplicates nut can be implemented. 
