@@ -51,7 +51,7 @@ def compare2TestImages(imgPath1: str, imgPath2: str, minContourArea: int, gaussi
 
 
 def compareDifferentCountourAreaValues(imagePath1: str, imagePath2: str, listAreaValues: list,
-                                       gaussianBlurRadius=[5,5]) -> np.ndarray:
+                                       gaussianBlurRadius=[5, 5]) -> np.ndarray:
     """
     Function to compare different countsour area values
     :param imagePath1: Path to image
@@ -211,7 +211,7 @@ def get_dir_info(folderPath: str) -> dict:
     return dirInfo
 
 
-def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussianBlurRadius: list[int,int] = None,
+def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gaussianBlurRadius: list[int, int] = None,
                           resizeImage: tuple[int, int] = None) -> dict:
     """
     Find duplicate images from a folderPathLists
@@ -226,51 +226,44 @@ def find_duplicate_images(folderPathLists: list[str], min_contour_area: int, gau
     image_paths = folderPathLists
     # Dictionary to store the duplicate images
     duplicates = {'DuplicateList': []}
-
+    # 1. Create a dcit
+    # 2. Iterate over the list of image paths
+    #
     # Compare each pair of image
+    image_path_dicts = {}
+    for image_path in image_paths:
+        image = cv2.imread(image_path)
 
-    for i in tqdm(range(len(image_paths)), desc="Processing..."):
+        preprocessed_img1 = cv2.resize(image, resizeImage)
+        preprocessed_img1 = preprocess_image_change_detection(preprocessed_img1, gaussianBlurRadius)
 
-        for j in range(len(image_paths)):
+        image_path_dicts[image_path] = preprocessed_img1
+
+    for i in tqdm(range(len(image_path_dicts.keys())), desc="Processing..."):
+
+        for j in range(i + 1, len(image_path_dicts.keys()) - 1):
 
             # Check if the image paths are not the same
-            if image_paths[i] != image_paths[j]:
+            myList = list(image_path_dicts.keys())
+            if myList[i] != myList[j]:
                 # Check if the image paths are not already in the duplicate list
-                if (image_paths[i] not in duplicates['DuplicateList']) and \
-                        (image_paths[j] not in duplicates['DuplicateList']):
-                    imagePath1 = image_paths[i]
-                    imagePath2 = image_paths[j]
+                if (myList[i] not in duplicates['DuplicateList']) and \
+                        (myList[j] not in duplicates['DuplicateList']):
+
+                    imagePath1 = myList[i]
+                    imagePath2 = myList[j]
+
                     # Load the images
-                    image1 = cv2.imread(imagePath1)
-                    image2 = cv2.imread(imagePath2)
-
-                    # Preprocess the images
-                    try:
-                        preprocessed_img1 = preprocess_image_change_detection(image1, gaussianBlurRadius)
-                        preprocessed_img2 = preprocess_image_change_detection(image2, gaussianBlurRadius)
-                    except AttributeError:
-                        pass
-
-                    # Resize the images to 240x240
-
-                    if resizeImage is None:
-                        if preprocessed_img1.shape != (240, 240):
-                            preprocessed_img1 = cv2.resize(preprocessed_img1, (240, 240))
-                        if preprocessed_img2.shape != (240, 240):
-                            preprocessed_img2 = cv2.resize(preprocessed_img2, (240, 240))
-                    else:
-                        if preprocessed_img1.shape != resizeImage:
-                            preprocessed_img1 = cv2.resize(preprocessed_img1, resizeImage)
-                        if preprocessed_img2.shape != resizeImage:
-                            preprocessed_img2 = cv2.resize(preprocessed_img2, resizeImage)
+                    t0 = time()
+                    image1 = image_path_dicts[imagePath1]
+                    image2 = image_path_dicts[imagePath2]
 
                     # Compare the images
-                    if preprocessed_img1.shape == preprocessed_img2.shape:
-                        score, _, _ = compare_frames_change_detection(preprocessed_img1, preprocessed_img2,
-                                                                      min_contour_area)
+                    score, _, _ = compare_frames_change_detection(image1, image2,
+                                                                  min_contour_area)
 
                     # If the score is less than 2500, then the images are duplicates
-                    if score < 2500:
+                    if score < score_threshold:
                         # Add duplicates found to the duplicate dictionary
                         duplicates['DuplicateList'].append(imagePath2)
                 else:
@@ -344,11 +337,11 @@ def processUserInput(dirInfoFile: dict, totalDuplicates: int) -> None:
                 for eachFile in duplicateList:
                     os.remove(eachFile)
             return print("Duplicates removed")
-            break
+
         elif userResponse == 'n':
             print("----------------------------------------------------------------")
             return print("Duplicates not removed")
-            break
+
         else:
             print("Invalid Response")
             print("----------------------------------------------------------------")
@@ -391,7 +384,7 @@ def makeNewDirInfoFile(folderPath, min_contour_area: int, gaussianBlur: [int, in
     return dirInfo, totalDuplicates
 
 
-def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeImage = None) -> None:
+def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeImage=None, score_threshold=2500) -> None:
     # Check if the directory information file exists
     dirInfoFile = './dirInfo.pkl'
     if os.path.exists(dirInfoFile):
@@ -412,7 +405,8 @@ def main(folder: str, min_contour_area: int, gaussianBlur: [int, int], resizeIma
             print("Creating a new one and deleting the old one...")
             print("----------------------------------------------------------------")
             os.remove(dirInfoFile)
-            dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur,resizeImage=resizeImage)
+            dirInfo, totalDuplicates = makeNewDirInfoFile(folder, min_contour_area, gaussianBlur,
+                                                          resizeImage=resizeImage)
             processUserInput(dirInfo, totalDuplicates)
 
     # If the directory information file does not exist
@@ -430,30 +424,22 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Find Duplicate Images in a folder')
     parser.add_argument('--folderPath', type=str, help='Path to the folder containing images',
-                        default='./dataset',required=True,
-                        )
-    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default = 500)
-    parser.add_argument('--gaussianBlur', type=int, nargs='+', help='Gaussian Blur Radius',
-                        default=[5,5])
-    parser.add_argument('--resizeImage', type=int, nargs='+', help='Resize Image',
-                        default=(240,240))
-
+                        default='./dataset', required=False)
+    parser.add_argument('--minContourArea', type=int, help='Minimum Contour Area', default=500)
+    parser.add_argument('--gaussianBlur', type=int, nargs=2, help='Gaussian Blur Radius',
+                        default=[5, 5])
+    parser.add_argument('--resizeImage', type=int, nargs=2, help='Resize Image',
+                        default=(240, 240))
+    parser.add_argument('--scoreThreshold', type=int, help='Enter Score Threshold', default=2500)
     args = parser.parse_args()
     folderPath = args.folderPath
     min_contour_area = args.minContourArea
-    gaussianBlur: list[int,int] = args.gaussianBlur
-    resizeImage: tuple[int,int] = args.resizeImage
+    gaussianBlur = args.gaussianBlur
+    resizeImage = args.resizeImage
+    score_threshold = args.scoreThreshold
 
-    if args is not None:
-        main(folderPath, min_contour_area, gaussianBlur,resizeImage)
-
-    else:
-        folderPath = "./dataset"
-        min_contour_area = 500
-        gaussianBlur = 5
-        resizeImage = (240, 240)
-        main(folderPath, 100, [5, 5], resizeImage)
-
+    main(folder=folderPath, min_contour_area=min_contour_area, gaussianBlur=gaussianBlur, resizeImage=resizeImage,
+         score_threshold=args.scoreThreshold)
     end = time()
     totalTimeInMinutes = round((end - start) / 60)
     print(f"Total Execution time in minutes: {totalTimeInMinutes} minutes")
